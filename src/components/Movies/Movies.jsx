@@ -1,40 +1,24 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import instance from "../../axiosConfig/instance";
 import { Link } from "react-router-dom";
 import Footer from "../Footer/Footer";
-import { useDispatch, useSelector } from "react-redux";
 import { MdOutlineFavorite, MdOutlineFavoriteBorder } from "react-icons/md";
 import { addFavor } from "../../store/slice/favorates";
+import { changeLanguage } from "../../store/slice/language";
+import { useDispatch, useSelector } from "react-redux";
+import { moviesAction } from "../../store/slice/movies";
 
 export default function Movies() {
   const favoraties = useSelector((state) => state.favorates.favorates);
+  const movies = useSelector((state) => state.movies.movies);
   const isLogged = useSelector((state) => state.isLogged.isLogged);
   const dispatch = useDispatch();
 
-  console.log("is logged from the state ", isLogged);
-
-  const [movies, setMovies] = useState([]);
   let [page, setPage] = useState("4");
-
-  const getDataFromAPI = () => {
-    console.log("this is favoraties");
-    instance
-      .get(`/movie/popular?page=${page}`)
-      .then((res) => {
-        setMovies(res.data.results);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-  useEffect(() => {
-    getDataFromAPI();
-  }, []);
-
   const movieInFav = (movie) => {
     return favoraties.some((favMovie) => favMovie.id === movie.id);
   };
+
   const handleAddToFavorites = (event, movie) => {
     event.preventDefault();
     if (movieInFav(movie)) {
@@ -64,10 +48,32 @@ export default function Movies() {
         setPage(page);
     }
   };
+
+  const lang = useSelector((state) => state.language.language);
+
+  useEffect(() => {
+    dispatch(moviesAction(page));
+  }, [page]);
+
+  const handleChange = () => {
+    dispatch(changeLanguage(lang == "en" ? "ar" : "en"));
+  };
   const handleSearchInput = (value) => {};
 
   return (
     <>
+      {" "}
+      <div>
+        <h1>language is : {lang}</h1>
+        <button
+          className="btn btn-primary"
+          onClick={() => {
+            handleChange();
+          }}
+        >
+          change
+        </button>
+      </div>
       <div className="container ">
         <div className="card-deck d-flex justify-content-center align-items-center flex-wrap">
           {movies.map((movie) => (
