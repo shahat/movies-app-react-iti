@@ -1,0 +1,5 @@
+step 1 : 
+  creat the store folder inside the src folder 
+step 2 : 
+  create the slice folder 
+ 
